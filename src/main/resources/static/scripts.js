@@ -3,16 +3,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('saveUserButton').addEventListener('click', function() {
         const id = document.getElementById('userId').value;
-        const user = {
-            name: document.getElementById('userName').value,
-            age: document.getElementById('userAge').value,
-            address: document.getElementById('userAddress').value
-        };
+        const name = document.getElementById('userName').value;
+        const age = document.getElementById('userAge').value;
+        const address = document.getElementById('userAddress').value;
+
+        const user = { name, age, address };
         if (id) {
-            updateUser(id, user);
+            // Update user
+            fetch(`/user/update/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            }).then(() => loadUsers());
         } else {
-            addUser(user);
+            // Add new user
+            fetch('/user/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            }).then(() => loadUsers());
         }
+
+        $('#userModal').modal('hide');
     });
 });
 
@@ -23,7 +39,8 @@ function loadUsers() {
             const userTableBody = document.getElementById('userTableBody');
             userTableBody.innerHTML = '';
             users.forEach(user => {
-                const row = `<tr>
+                const row = document.createElement('tr');
+                row.innerHTML = `
                     <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${user.age}</td>
@@ -32,44 +49,10 @@ function loadUsers() {
                         <button class="btn btn-warning" onclick="editUser(${user.id})">Edit</button>
                         <button class="btn btn-danger" onclick="deleteUser(${user.id})">Delete</button>
                     </td>
-                </tr>`;
-                userTableBody.innerHTML += row;
+                `;
+                userTableBody.appendChild(row);
             });
         });
-}
-
-function addUser(user) {
-    fetch('/user/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(user)
-    }).then(() => {
-        loadUsers();
-        $('#userModal').modal('hide');
-    });
-}
-
-function updateUser(id, user) {
-    fetch(`/user/update/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(user)
-    }).then(() => {
-        loadUsers();
-        $('#userModal').modal('hide');
-    });
-}
-
-function deleteUser(id) {
-    fetch(`/user/delete/${id}`, {
-        method: 'DELETE'
-    }).then(() => {
-        loadUsers();
-    });
 }
 
 function editUser(id) {
@@ -82,4 +65,10 @@ function editUser(id) {
             document.getElementById('userAddress').value = user.address;
             $('#userModal').modal('show');
         });
+}
+
+function deleteUser(id) {
+    fetch(`/user/delete/${id}`, {
+        method: 'DELETE'
+    }).then(() => loadUsers());
 }

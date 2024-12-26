@@ -21,7 +21,11 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addUser(@RequestBody User user) {
+    public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO) {
+        User user = new User();
+        user.setName(userDTO.getName());
+        user.setAge(userDTO.getAge());
+        user.setAddress(userDTO.getAddress());
         userService.addUser(user);
         return ResponseEntity.ok("User added successfully");
     }
@@ -39,7 +43,11 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable Integer id, @RequestBody User user) {
+    public ResponseEntity<String> updateUser(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
+        User user = new User();
+        user.setName(userDTO.getName());
+        user.setAge(userDTO.getAge());
+        user.setAddress(userDTO.getAddress());
         userService.updateUser(id, user);
         return ResponseEntity.ok("User updated successfully");
     }

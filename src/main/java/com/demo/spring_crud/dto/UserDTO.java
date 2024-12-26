@@ -1,14 +1,11 @@
 package com.demo.spring_crud.dto;
 
+import lombok.Data;
+
+@Data
 public class UserDTO {
+    private Integer id;
     private String name;
-
-    // Getters and setters
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private Integer age;
+    private String address;
 }
